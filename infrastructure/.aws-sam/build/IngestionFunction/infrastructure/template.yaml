@@ -1,0 +1,210 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: IoT Data Ingestion Pipeline
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+
+Resources:
+
+  #################################################
+  # S3 DATA LAKE
+  #################################################
+
+  RawDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-raw-data"
+
+  #################################################
+  # S3 DOCUMENTATION
+  #################################################
+
+  DocumentationBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-tech-doc"
+
+  #################################################
+  # DYNAMODB
+  #################################################
+
+  MetricsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${AWS::StackName}-metrics"
+      BillingMode: PAY_PER_REQUEST
+
+      AttributeDefinitions:
+        - AttributeName: request_id
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: request_id
+          KeyType: HASH
+
+  #################################################
+  # LAMBDA
+  #################################################
+
+  IngestionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "iot-ingestion-${Environment}"
+
+      Runtime: python3.11
+
+      Handler: src/index.handler
+
+      CodeUri: ../
+
+      MemorySize: 256
+
+      Timeout: 30
+
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref RawDataBucket
+          DYNAMODB_TABLE: !Ref MetricsTable
+
+      Policies:
+
+        - S3CrudPolicy:
+            BucketName: !Ref RawDataBucket
+
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MetricsTable
+
+  #################################################
+  # API GATEWAY
+  #################################################
+
+  HttpApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub "${AWS::StackName}-api"
+      ProtocolType: HTTP
+
+  LambdaIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt IngestionFunction.Arn
+      PayloadFormatVersion: "2.0"
+
+  IngestionRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApi
+      RouteKey: "POST /ingest"
+      Target: !Sub "integrations/${LambdaIntegration}"
+
+  ApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref HttpApi
+      StageName: "$default"
+      AutoDeploy: true
+
+  ApiGatewayPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref IngestionFunction
+      Principal: apigateway.amazonaws.com
+
+  #################################################
+  # CLOUDFRONT INGESTION
+  #################################################
+
+  IngestionDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+
+        Origins:
+          - DomainName: !Sub "${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+            Id: ApiOrigin
+
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+
+        DefaultCacheBehavior:
+          TargetOriginId: ApiOrigin
+          ViewerProtocolPolicy: redirect-to-https
+
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - POST
+            - PATCH
+            - DELETE
+
+          CachedMethods:
+            - GET
+            - HEAD
+
+          ForwardedValues:
+            QueryString: true
+
+  #################################################
+  # OAC DOCUMENTATION
+  #################################################
+
+  DocumentationOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${AWS::StackName}-oac"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  #################################################
+  # CLOUDFRONT DOCUMENTATION
+  #################################################
+
+  DocumentationDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+
+        DefaultRootObject: index.html
+
+        Origins:
+          - DomainName: !GetAtt DocumentationBucket.RegionalDomainName
+            Id: DocumentationOrigin
+            S3OriginConfig: {}
+
+            OriginAccessControlId: !GetAtt DocumentationOAC.Id
+
+        DefaultCacheBehavior:
+          TargetOriginId: DocumentationOrigin
+          ViewerProtocolPolicy: redirect-to-https
+
+Outputs:
+
+  CloudFrontIngestionURL:
+    Description: URL d'ingestion
+    Value: !Sub "https://${IngestionDistribution.DomainName}"
+
+  CloudFrontDocURL:
+    Description: URL documentation
+    Value: !Sub "https://${DocumentationDistribution.DomainName}"
+
+  DataLakeBucket:
+    Value: !Ref RawDataBucket
+
+  DocumentationBucketName:
+    Value: !Ref DocumentationBucket
+
+  DynamoDBTable:
+    Value: !Ref MetricsTable

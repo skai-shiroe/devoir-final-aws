@@ -1,0 +1,20 @@
+[
+    {
+        "label": "handler",
+        "kind": 2,
+        "importPath": ".aws-sam.build.IngestionFunction.src.index",
+        "description": ".aws-sam.build.IngestionFunction.src.index",
+        "peekOfCode": "def handler(event, context):\n    return {\n        \"statusCode\": 200,\n        \"body\": \"Lambda deploy OK\"\n    }",
+        "detail": ".aws-sam.build.IngestionFunction.src.index",
+        "documentation": {}
+    },
+    {
+        "label": "handler",
+        "kind": 2,
+        "importPath": "src.index",
+        "description": "src.index",
+        "peekOfCode": "def handler(event, context):\n    return {\n        \"statusCode\": 200,\n        \"body\": \"Lambda deploy OK\"\n    }",
+        "detail": "src.index",
+        "documentation": {}
+    }
+]

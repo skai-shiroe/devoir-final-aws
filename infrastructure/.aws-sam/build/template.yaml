@@ -1,0 +1,168 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: IoT Data Ingestion Pipeline
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+Resources:
+  RawDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-raw-data
+  DocumentationBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-tech-doc
+  MetricsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-metrics
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: request_id
+        AttributeType: S
+      KeySchema:
+      - AttributeName: request_id
+        KeyType: HASH
+  IngestionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: iot-ingestion-${Environment}
+      Runtime: python3.11
+      Handler: src/index.handler
+      CodeUri: IngestionFunction
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          S3_BUCKET:
+            Ref: RawDataBucket
+          DYNAMODB_TABLE:
+            Ref: MetricsTable
+      Policies:
+      - S3CrudPolicy:
+          BucketName:
+            Ref: RawDataBucket
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: MetricsTable
+    Metadata:
+      SamResourceId: IngestionFunction
+  HttpApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api
+      ProtocolType: HTTP
+  LambdaIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+        - IngestionFunction
+        - Arn
+      PayloadFormatVersion: '2.0'
+  IngestionRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: HttpApi
+      RouteKey: POST /ingest
+      Target:
+        Fn::Sub: integrations/${LambdaIntegration}
+  ApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId:
+        Ref: HttpApi
+      StageName: $default
+      AutoDeploy: true
+  ApiGatewayPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: IngestionFunction
+      Principal: apigateway.amazonaws.com
+  IngestionDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Origins:
+        - DomainName:
+            Fn::Sub: ${HttpApi}.execute-api.${AWS::Region}.amazonaws.com
+          Id: ApiOrigin
+          CustomOriginConfig:
+            OriginProtocolPolicy: https-only
+        DefaultCacheBehavior:
+          TargetOriginId: ApiOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          - PUT
+          - POST
+          - PATCH
+          - DELETE
+          CachedMethods:
+          - GET
+          - HEAD
+          ForwardedValues:
+            QueryString: true
+  DocumentationOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name:
+          Fn::Sub: ${AWS::StackName}-oac
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+  DocumentationDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        Origins:
+        - DomainName:
+            Fn::GetAtt:
+            - DocumentationBucket
+            - RegionalDomainName
+          Id: DocumentationOrigin
+          S3OriginConfig: {}
+          OriginAccessControlId:
+            Fn::GetAtt:
+            - DocumentationOAC
+            - Id
+        DefaultCacheBehavior:
+          TargetOriginId: DocumentationOrigin
+          ViewerProtocolPolicy: redirect-to-https
+Outputs:
+  CloudFrontIngestionURL:
+    Description: URL d'ingestion
+    Value:
+      Fn::Sub: https://${IngestionDistribution.DomainName}
+  CloudFrontDocURL:
+    Description: URL documentation
+    Value:
+      Fn::Sub: https://${DocumentationDistribution.DomainName}
+  DataLakeBucket:
+    Value:
+      Ref: RawDataBucket
+  DocumentationBucketName:
+    Value:
+      Ref: DocumentationBucket
+  DynamoDBTable:
+    Value:
+      Ref: MetricsTable

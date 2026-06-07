@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: IoT Data Ingestion Pipeline
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+
+Resources:
+
+  #################################################
+  # S3 DATA LAKE
+  #################################################
+
+  RawDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-raw-data"
+
+  #################################################
+  # S3 DOCUMENTATION
+  #################################################
+
+  DocumentationBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-tech-doc"
+
+  #################################################
+  # DYNAMODB
+  #################################################
+
+  MetricsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${AWS::StackName}-metrics"
+      BillingMode: PAY_PER_REQUEST
+
+      AttributeDefinitions:
+        - AttributeName: request_id
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: request_id
+          KeyType: HASH
+
+  #################################################
+  # LAMBDA
+  #################################################
+
+  IngestionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "iot-ingestion-${Environment}"
+
+      Runtime: python3.11
+
+      Handler: src/index.handler
+
+      CodeUri: ../
+
+      MemorySize: 256
+
+      Timeout: 30
+
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref RawDataBucket
+          DYNAMODB_TABLE: !Ref MetricsTable
+
+      Policies:
+
+        - S3CrudPolicy:
+            BucketName: !Ref RawDataBucket
+
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MetricsTable
+
+  #################################################
+  # API GATEWAY
+  #################################################
+
+  HttpApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub "${AWS::StackName}-api"
+      ProtocolType: HTTP
+
+  LambdaIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt IngestionFunction.Arn
+      PayloadFormatVersion: "2.0"
+
+  IngestionRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApi
+      RouteKey: "POST /ingest"
+      Target: !Sub "integrations/${LambdaIntegration}"
+
+  ApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref HttpApi
+      StageName: "$default"
+      AutoDeploy: true
+
+  ApiGatewayPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref IngestionFunction
+      Principal: apigateway.amazonaws.com
+
+Outputs:
+
+  ApiEndpoint:
+    Description: URL de l'API d'ingestion
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+
+  DocumentationBucketURL:
+    Description: URL du bucket de documentation (S3 static website)
+    Value: !Sub "http://${DocumentationBucket.RegionalDomainName}"
+
+  DataLakeBucket:
+    Value: !Ref RawDataBucket
+
+  DocumentationBucketName:
+    Value: !Ref DocumentationBucket
+
+  DynamoDBTable:
+    Value: !Ref MetricsTable

@@ -1,0 +1,14 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "devoir-iot-ksenou"
+resolve_s3 = true
+s3_prefix = "devoir-iot-ksenou"
+region = "eu-west-3"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Environment=\"ksenou\""
+image_repositories = []
+
+[default.global.parameters]
+region = "eu-west-3"
