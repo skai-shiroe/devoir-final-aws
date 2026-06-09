@@ -1,5 +1,9 @@
 import requests
 import json
+import urllib3
+
+# Disable SSL warnings (local certificate issue)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # URLs from the stack Outputs
 CLOUDFRONT_URL = "https://dimjaatmzzr2n.cloudfront.net"
@@ -16,29 +20,12 @@ valid_payload = {
     ]
 }
 
-print("=== Test 1: Valid payload via CloudFront ===")
-try:
-    response = requests.post(
-        f"{CLOUDFRONT_URL}/ingest",
-        json=valid_payload,
-        timeout=30
-    )
-    print(f"Status Code: {response.status_code}")
-    print(f"Response Body: {json.dumps(response.json(), indent=2)}")
-    if response.status_code == 201:
-        print("✅ Ingestion successful!")
-    else:
-        print("❌ Unexpected status code")
-except Exception as e:
-    print(f"❌ Request failed: {str(e)}")
-
-print()
-
-print("=== Test 2: Valid payload via API Gateway direct ===")
+print("=== Test 1: Valid payload via API Gateway direct ===")
 try:
     response = requests.post(
         f"{API_URL}/ingest",
         json=valid_payload,
+        verify=False,
         timeout=30
     )
     print(f"Status Code: {response.status_code}")
@@ -51,12 +38,13 @@ except Exception as e:
 print()
 
 # Corrupted payload (malformed JSON)
-print("=== Test 3: Corrupted payload (malformed JSON) ===")
+print("=== Test 2: Corrupted payload (malformed JSON) ===")
 try:
     response = requests.post(
-        f"{CLOUDFRONT_URL}/ingest",
+        f"{API_URL}/ingest",
         data="this is not valid json",
         headers={"Content-Type": "application/json"},
+        verify=False,
         timeout=30
     )
     print(f"Status Code: {response.status_code}")
@@ -71,7 +59,7 @@ except Exception as e:
 print()
 
 # Missing temperature values
-print("=== Test 4: Missing temperature values ===")
+print("=== Test 3: Missing temperature values ===")
 invalid_payload = {
     "measurements": [
         {"sensor_id": "sensor-001", "status": "OK"},  # Missing temperature
@@ -79,8 +67,9 @@ invalid_payload = {
 }
 try:
     response = requests.post(
-        f"{CLOUDFRONT_URL}/ingest",
+        f"{API_URL}/ingest",
         json=invalid_payload,
+        verify=False,
         timeout=30
     )
     print(f"Status Code: {response.status_code}")

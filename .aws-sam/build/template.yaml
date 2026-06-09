@@ -106,6 +106,17 @@ Resources:
         DefaultCacheBehavior:
           TargetOriginId: ApiOrigin
           ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          - PUT
+          - POST
+          - PATCH
+          - DELETE
+          CachedMethods:
+          - GET
+          - HEAD
           CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
   DocumentationOAC:
     Type: AWS::CloudFront::OriginAccessControl

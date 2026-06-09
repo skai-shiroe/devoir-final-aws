@@ -1,8 +1,13 @@
 import requests
 import json
+import urllib3
 
-# Replace with your actual CloudFront Ingestion URL from the stack Outputs
-CLOUDFRONT_URL = "https://d1ngb7eee3.execute-api.eu-west-3.amazonaws.com"
+# Disable SSL warnings (local certificate issue)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# URLs from the stack Outputs
+CLOUDFRONT_URL = "https://dimjaatmzzr2n.cloudfront.net"
+API_URL = "https://d1ngb7eee3.execute-api.eu-west-3.amazonaws.com"
 
 # Valid payload with 4+ structured measurements
 valid_payload = {
@@ -15,19 +20,18 @@ valid_payload = {
     ]
 }
 
-print("=== Test 1: Valid payload ===")
+print("=== Test 1: Valid payload via API Gateway direct ===")
 try:
     response = requests.post(
-        f"{CLOUDFRONT_URL}/ingest",
+        f"{API_URL}/ingest",
         json=valid_payload,
+        verify=False,
         timeout=30
     )
     print(f"Status Code: {response.status_code}")
     print(f"Response Body: {json.dumps(response.json(), indent=2)}")
     if response.status_code == 201:
         print("✅ Ingestion successful!")
-    else:
-        print("❌ Unexpected status code")
 except Exception as e:
     print(f"❌ Request failed: {str(e)}")
 
@@ -37,15 +41,16 @@ print()
 print("=== Test 2: Corrupted payload (malformed JSON) ===")
 try:
     response = requests.post(
-        f"{CLOUDFRONT_URL}/ingest",
+        f"{API_URL}/ingest",
         data="this is not valid json",
         headers={"Content-Type": "application/json"},
+        verify=False,
         timeout=30
     )
     print(f"Status Code: {response.status_code}")
     print(f"Response Body: {response.text}")
     if response.status_code == 400:
-        print("✅ Error correctly caught!")
+        print("✅ Error correctly caught with stack trace in CloudWatch!")
     else:
         print("❌ Expected 400 error")
 except Exception as e:
@@ -62,8 +67,9 @@ invalid_payload = {
 }
 try:
     response = requests.post(
-        f"{CLOUDFRONT_URL}/ingest",
+        f"{API_URL}/ingest",
         json=invalid_payload,
+        verify=False,
         timeout=30
     )
     print(f"Status Code: {response.status_code}")

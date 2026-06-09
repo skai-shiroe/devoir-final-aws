@@ -2,6 +2,7 @@ import json
 import os
 import uuid
 import boto3
+from decimal import Decimal
 from datetime import datetime
 
 s3 = boto3.client("s3")
@@ -9,6 +10,14 @@ dynamodb = boto3.resource("dynamodb")
 
 S3_BUCKET = os.environ.get("S3_BUCKET", "default-bucket")
 DYNAMODB_TABLE = os.environ.get("DYNAMODB_TABLE", "default-table")
+
+
+class DecimalEncoder(json.JSONEncoder):
+    """Helper to serialize Decimal to float for JSON responses."""
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        return super().default(obj)
 
 
 def handler(event, context):
@@ -49,14 +58,14 @@ def handler(event, context):
             1 for m in measurements if m.get("status", "").upper() == "ERROR"
         )
 
-        # Save execution report to DynamoDB
+        # Save execution report to DynamoDB (use Decimal for DynamoDB compatibility)
         table = dynamodb.Table(DYNAMODB_TABLE)
         table.put_item(
             Item={
                 "request_id": request_id,
                 "timestamp": timestamp,
                 "s3_path": s3_key,
-                "avg_temperature": avg_temperature,
+                "avg_temperature": Decimal(str(avg_temperature)),
                 "error_count": error_count,
                 "total_measurements": len(measurements),
             }

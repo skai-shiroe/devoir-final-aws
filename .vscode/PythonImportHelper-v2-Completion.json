@@ -36,6 +36,22 @@
         "documentation": {}
     },
     {
+        "label": "Decimal",
+        "importPath": "decimal",
+        "description": "decimal",
+        "isExtraImport": true,
+        "detail": "decimal",
+        "documentation": {}
+    },
+    {
+        "label": "Decimal",
+        "importPath": "decimal",
+        "description": "decimal",
+        "isExtraImport": true,
+        "detail": "decimal",
+        "documentation": {}
+    },
+    {
         "label": "datetime",
         "importPath": "datetime",
         "description": "datetime",
@@ -61,6 +77,24 @@
         "documentation": {}
     },
     {
+        "label": "urllib3",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "urllib3",
+        "description": "urllib3",
+        "detail": "urllib3",
+        "documentation": {}
+    },
+    {
+        "label": "DecimalEncoder",
+        "kind": 6,
+        "importPath": ".aws-sam.build.IngestionFunction.src.index",
+        "description": ".aws-sam.build.IngestionFunction.src.index",
+        "peekOfCode": "class DecimalEncoder(json.JSONEncoder):\n    \"\"\"Helper to serialize Decimal to float for JSON responses.\"\"\"\n    def default(self, obj):\n        if isinstance(obj, Decimal):\n            return float(obj)\n        return super().default(obj)\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):",
+        "detail": ".aws-sam.build.IngestionFunction.src.index",
+        "documentation": {}
+    },
+    {
         "label": "handler",
         "kind": 2,
         "importPath": ".aws-sam.build.IngestionFunction.src.index",
@@ -74,7 +108,7 @@
         "kind": 5,
         "importPath": ".aws-sam.build.IngestionFunction.src.index",
         "description": ".aws-sam.build.IngestionFunction.src.index",
-        "peekOfCode": "s3 = boto3.client(\"s3\")\ndynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:",
+        "peekOfCode": "s3 = boto3.client(\"s3\")\ndynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\nclass DecimalEncoder(json.JSONEncoder):\n    \"\"\"Helper to serialize Decimal to float for JSON responses.\"\"\"\n    def default(self, obj):\n        if isinstance(obj, Decimal):\n            return float(obj)\n        return super().default(obj)",
         "detail": ".aws-sam.build.IngestionFunction.src.index",
         "documentation": {}
     },
@@ -83,7 +117,7 @@
         "kind": 5,
         "importPath": ".aws-sam.build.IngestionFunction.src.index",
         "description": ".aws-sam.build.IngestionFunction.src.index",
-        "peekOfCode": "dynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})",
+        "peekOfCode": "dynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\nclass DecimalEncoder(json.JSONEncoder):\n    \"\"\"Helper to serialize Decimal to float for JSON responses.\"\"\"\n    def default(self, obj):\n        if isinstance(obj, Decimal):\n            return float(obj)\n        return super().default(obj)\ndef handler(event, context):",
         "detail": ".aws-sam.build.IngestionFunction.src.index",
         "documentation": {}
     },
@@ -92,7 +126,7 @@
         "kind": 5,
         "importPath": ".aws-sam.build.IngestionFunction.src.index",
         "description": ".aws-sam.build.IngestionFunction.src.index",
-        "peekOfCode": "S3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})\n        # Generate a unique request ID",
+        "peekOfCode": "S3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\nclass DecimalEncoder(json.JSONEncoder):\n    \"\"\"Helper to serialize Decimal to float for JSON responses.\"\"\"\n    def default(self, obj):\n        if isinstance(obj, Decimal):\n            return float(obj)\n        return super().default(obj)\ndef handler(event, context):\n    try:",
         "detail": ".aws-sam.build.IngestionFunction.src.index",
         "documentation": {}
     },
@@ -101,7 +135,7 @@
         "kind": 5,
         "importPath": ".aws-sam.build.IngestionFunction.src.index",
         "description": ".aws-sam.build.IngestionFunction.src.index",
-        "peekOfCode": "DYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})\n        # Generate a unique request ID\n        request_id = str(uuid.uuid4())",
+        "peekOfCode": "DYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\nclass DecimalEncoder(json.JSONEncoder):\n    \"\"\"Helper to serialize Decimal to float for JSON responses.\"\"\"\n    def default(self, obj):\n        if isinstance(obj, Decimal):\n            return float(obj)\n        return super().default(obj)\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body",
         "detail": ".aws-sam.build.IngestionFunction.src.index",
         "documentation": {}
     },
@@ -110,7 +144,16 @@
         "kind": 5,
         "importPath": ".aws-sam.build.IngestionFunction.test_client",
         "description": ".aws-sam.build.IngestionFunction.test_client",
-        "peekOfCode": "CLOUDFRONT_URL = \"https://d1ngb7eee3.execute-api.eu-west-3.amazonaws.com\"\n# Valid payload with 4+ structured measurements\nvalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},\n    ]",
+        "peekOfCode": "CLOUDFRONT_URL = \"https://dimjaatmzzr2n.cloudfront.net\"\nAPI_URL = \"https://d1ngb7eee3.execute-api.eu-west-3.amazonaws.com\"\n# Valid payload with 4+ structured measurements\nvalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},",
+        "detail": ".aws-sam.build.IngestionFunction.test_client",
+        "documentation": {}
+    },
+    {
+        "label": "API_URL",
+        "kind": 5,
+        "importPath": ".aws-sam.build.IngestionFunction.test_client",
+        "description": ".aws-sam.build.IngestionFunction.test_client",
+        "peekOfCode": "API_URL = \"https://d1ngb7eee3.execute-api.eu-west-3.amazonaws.com\"\n# Valid payload with 4+ structured measurements\nvalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},\n    ]",
         "detail": ".aws-sam.build.IngestionFunction.test_client",
         "documentation": {}
     },
@@ -119,7 +162,7 @@
         "kind": 5,
         "importPath": ".aws-sam.build.IngestionFunction.test_client",
         "description": ".aws-sam.build.IngestionFunction.test_client",
-        "peekOfCode": "valid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},\n    ]\n}\nprint(\"=== Test 1: Valid payload ===\")",
+        "peekOfCode": "valid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},\n    ]\n}\nprint(\"=== Test 1: Valid payload via API Gateway direct ===\")",
         "detail": ".aws-sam.build.IngestionFunction.test_client",
         "documentation": {}
     },
@@ -128,8 +171,17 @@
         "kind": 5,
         "importPath": ".aws-sam.build.IngestionFunction.test_client",
         "description": ".aws-sam.build.IngestionFunction.test_client",
-        "peekOfCode": "invalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"status\": \"OK\"},  # Missing temperature\n    ]\n}\ntry:\n    response = requests.post(\n        f\"{CLOUDFRONT_URL}/ingest\",\n        json=invalid_payload,\n        timeout=30",
+        "peekOfCode": "invalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"status\": \"OK\"},  # Missing temperature\n    ]\n}\ntry:\n    response = requests.post(\n        f\"{API_URL}/ingest\",\n        json=invalid_payload,\n        verify=False,",
         "detail": ".aws-sam.build.IngestionFunction.test_client",
+        "documentation": {}
+    },
+    {
+        "label": "DecimalEncoder",
+        "kind": 6,
+        "importPath": "src.index",
+        "description": "src.index",
+        "peekOfCode": "class DecimalEncoder(json.JSONEncoder):\n    \"\"\"Helper to serialize Decimal to float for JSON responses.\"\"\"\n    def default(self, obj):\n        if isinstance(obj, Decimal):\n            return float(obj)\n        return super().default(obj)\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):",
+        "detail": "src.index",
         "documentation": {}
     },
     {
@@ -146,7 +198,7 @@
         "kind": 5,
         "importPath": "src.index",
         "description": "src.index",
-        "peekOfCode": "s3 = boto3.client(\"s3\")\ndynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:",
+        "peekOfCode": "s3 = boto3.client(\"s3\")\ndynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\nclass DecimalEncoder(json.JSONEncoder):\n    \"\"\"Helper to serialize Decimal to float for JSON responses.\"\"\"\n    def default(self, obj):\n        if isinstance(obj, Decimal):\n            return float(obj)\n        return super().default(obj)",
         "detail": "src.index",
         "documentation": {}
     },
@@ -155,7 +207,7 @@
         "kind": 5,
         "importPath": "src.index",
         "description": "src.index",
-        "peekOfCode": "dynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})",
+        "peekOfCode": "dynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\nclass DecimalEncoder(json.JSONEncoder):\n    \"\"\"Helper to serialize Decimal to float for JSON responses.\"\"\"\n    def default(self, obj):\n        if isinstance(obj, Decimal):\n            return float(obj)\n        return super().default(obj)\ndef handler(event, context):",
         "detail": "src.index",
         "documentation": {}
     },
@@ -164,7 +216,7 @@
         "kind": 5,
         "importPath": "src.index",
         "description": "src.index",
-        "peekOfCode": "S3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})\n        # Generate a unique request ID",
+        "peekOfCode": "S3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\nclass DecimalEncoder(json.JSONEncoder):\n    \"\"\"Helper to serialize Decimal to float for JSON responses.\"\"\"\n    def default(self, obj):\n        if isinstance(obj, Decimal):\n            return float(obj)\n        return super().default(obj)\ndef handler(event, context):\n    try:",
         "detail": "src.index",
         "documentation": {}
     },
@@ -173,7 +225,7 @@
         "kind": 5,
         "importPath": "src.index",
         "description": "src.index",
-        "peekOfCode": "DYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})\n        # Generate a unique request ID\n        request_id = str(uuid.uuid4())",
+        "peekOfCode": "DYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\nclass DecimalEncoder(json.JSONEncoder):\n    \"\"\"Helper to serialize Decimal to float for JSON responses.\"\"\"\n    def default(self, obj):\n        if isinstance(obj, Decimal):\n            return float(obj)\n        return super().default(obj)\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body",
         "detail": "src.index",
         "documentation": {}
     },
@@ -200,7 +252,7 @@
         "kind": 5,
         "importPath": "test_client",
         "description": "test_client",
-        "peekOfCode": "valid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},\n    ]\n}\nprint(\"=== Test 1: Valid payload via CloudFront ===\")",
+        "peekOfCode": "valid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},\n    ]\n}\nprint(\"=== Test 1: Valid payload via API Gateway direct ===\")",
         "detail": "test_client",
         "documentation": {}
     },
@@ -209,7 +261,7 @@
         "kind": 5,
         "importPath": "test_client",
         "description": "test_client",
-        "peekOfCode": "invalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"status\": \"OK\"},  # Missing temperature\n    ]\n}\ntry:\n    response = requests.post(\n        f\"{CLOUDFRONT_URL}/ingest\",\n        json=invalid_payload,\n        timeout=30",
+        "peekOfCode": "invalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"status\": \"OK\"},  # Missing temperature\n    ]\n}\ntry:\n    response = requests.post(\n        f\"{API_URL}/ingest\",\n        json=invalid_payload,\n        verify=False,",
         "detail": "test_client",
         "documentation": {}
     }
