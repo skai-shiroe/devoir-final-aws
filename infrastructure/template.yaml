@@ -117,15 +117,94 @@ Resources:
       FunctionName: !Ref IngestionFunction
       Principal: apigateway.amazonaws.com
 
+  #################################################
+  # CLOUDFRONT INGESTION
+  #################################################
+
+  IngestionDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+
+        Origins:
+          - DomainName: !Sub "${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+            Id: ApiOrigin
+
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+
+        DefaultCacheBehavior:
+          TargetOriginId: ApiOrigin
+          ViewerProtocolPolicy: redirect-to-https
+
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+
+  #################################################
+  # OAC DOCUMENTATION
+  #################################################
+
+  DocumentationOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${AWS::StackName}-oac"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  #################################################
+  # BUCKET POLICY DOCUMENTATION
+  #################################################
+
+  DocumentationBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref DocumentationBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: s3:GetObject
+            Resource: !Sub "${DocumentationBucket.Arn}/*"
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${DocumentationDistribution}"
+
+  #################################################
+  # CLOUDFRONT DOCUMENTATION
+  #################################################
+
+  DocumentationDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+
+        DefaultRootObject: index.html
+
+        Origins:
+          - DomainName: !GetAtt DocumentationBucket.RegionalDomainName
+            Id: DocumentationOrigin
+            S3OriginConfig: {}
+
+            OriginAccessControlId: !GetAtt DocumentationOAC.Id
+
+        DefaultCacheBehavior:
+          TargetOriginId: DocumentationOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+
 Outputs:
 
-  ApiEndpoint:
-    Description: URL de l'API d'ingestion
-    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  CloudFrontIngestionURL:
+    Description: URL d'ingestion
+    Value: !Sub "https://${IngestionDistribution.DomainName}"
 
-  DocumentationBucketURL:
-    Description: URL du bucket de documentation (S3 static website)
-    Value: !Sub "http://${DocumentationBucket.RegionalDomainName}"
+  CloudFrontDocURL:
+    Description: URL documentation
+    Value: !Sub "https://${DocumentationDistribution.DomainName}"
 
   DataLakeBucket:
     Value: !Ref RawDataBucket
@@ -135,3 +214,7 @@ Outputs:
 
   DynamoDBTable:
     Value: !Ref MetricsTable
+
+  ApiEndpoint:
+    Description: URL directe de l'API
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"

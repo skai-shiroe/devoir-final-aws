@@ -1,11 +1,135 @@
 [
     {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "uuid",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "uuid",
+        "description": "uuid",
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "boto3",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "boto3",
+        "description": "boto3",
+        "detail": "boto3",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
         "label": "handler",
         "kind": 2,
         "importPath": ".aws-sam.build.IngestionFunction.src.index",
         "description": ".aws-sam.build.IngestionFunction.src.index",
-        "peekOfCode": "def handler(event, context):\n    return {\n        \"statusCode\": 200,\n        \"body\": \"Lambda deploy OK\"\n    }",
+        "peekOfCode": "def handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})\n        # Generate a unique request ID\n        request_id = str(uuid.uuid4())\n        timestamp = datetime.utcnow().strftime(\"%Y-%m-%dT%H:%M:%S.000Z\")",
         "detail": ".aws-sam.build.IngestionFunction.src.index",
+        "documentation": {}
+    },
+    {
+        "label": "s3",
+        "kind": 5,
+        "importPath": ".aws-sam.build.IngestionFunction.src.index",
+        "description": ".aws-sam.build.IngestionFunction.src.index",
+        "peekOfCode": "s3 = boto3.client(\"s3\")\ndynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:",
+        "detail": ".aws-sam.build.IngestionFunction.src.index",
+        "documentation": {}
+    },
+    {
+        "label": "dynamodb",
+        "kind": 5,
+        "importPath": ".aws-sam.build.IngestionFunction.src.index",
+        "description": ".aws-sam.build.IngestionFunction.src.index",
+        "peekOfCode": "dynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})",
+        "detail": ".aws-sam.build.IngestionFunction.src.index",
+        "documentation": {}
+    },
+    {
+        "label": "S3_BUCKET",
+        "kind": 5,
+        "importPath": ".aws-sam.build.IngestionFunction.src.index",
+        "description": ".aws-sam.build.IngestionFunction.src.index",
+        "peekOfCode": "S3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})\n        # Generate a unique request ID",
+        "detail": ".aws-sam.build.IngestionFunction.src.index",
+        "documentation": {}
+    },
+    {
+        "label": "DYNAMODB_TABLE",
+        "kind": 5,
+        "importPath": ".aws-sam.build.IngestionFunction.src.index",
+        "description": ".aws-sam.build.IngestionFunction.src.index",
+        "peekOfCode": "DYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})\n        # Generate a unique request ID\n        request_id = str(uuid.uuid4())",
+        "detail": ".aws-sam.build.IngestionFunction.src.index",
+        "documentation": {}
+    },
+    {
+        "label": "CLOUDFRONT_URL",
+        "kind": 5,
+        "importPath": ".aws-sam.build.IngestionFunction.test_client",
+        "description": ".aws-sam.build.IngestionFunction.test_client",
+        "peekOfCode": "CLOUDFRONT_URL = \"https://d1ngb7eee3.execute-api.eu-west-3.amazonaws.com\"\n# Valid payload with 4+ structured measurements\nvalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},\n    ]",
+        "detail": ".aws-sam.build.IngestionFunction.test_client",
+        "documentation": {}
+    },
+    {
+        "label": "valid_payload",
+        "kind": 5,
+        "importPath": ".aws-sam.build.IngestionFunction.test_client",
+        "description": ".aws-sam.build.IngestionFunction.test_client",
+        "peekOfCode": "valid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},\n    ]\n}\nprint(\"=== Test 1: Valid payload ===\")",
+        "detail": ".aws-sam.build.IngestionFunction.test_client",
+        "documentation": {}
+    },
+    {
+        "label": "invalid_payload",
+        "kind": 5,
+        "importPath": ".aws-sam.build.IngestionFunction.test_client",
+        "description": ".aws-sam.build.IngestionFunction.test_client",
+        "peekOfCode": "invalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"status\": \"OK\"},  # Missing temperature\n    ]\n}\ntry:\n    response = requests.post(\n        f\"{CLOUDFRONT_URL}/ingest\",\n        json=invalid_payload,\n        timeout=30",
+        "detail": ".aws-sam.build.IngestionFunction.test_client",
         "documentation": {}
     },
     {
@@ -13,8 +137,80 @@
         "kind": 2,
         "importPath": "src.index",
         "description": "src.index",
-        "peekOfCode": "def handler(event, context):\n    return {\n        \"statusCode\": 200,\n        \"body\": \"Lambda deploy OK\"\n    }",
+        "peekOfCode": "def handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})\n        # Generate a unique request ID\n        request_id = str(uuid.uuid4())\n        timestamp = datetime.utcnow().strftime(\"%Y-%m-%dT%H:%M:%S.000Z\")",
         "detail": "src.index",
+        "documentation": {}
+    },
+    {
+        "label": "s3",
+        "kind": 5,
+        "importPath": "src.index",
+        "description": "src.index",
+        "peekOfCode": "s3 = boto3.client(\"s3\")\ndynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:",
+        "detail": "src.index",
+        "documentation": {}
+    },
+    {
+        "label": "dynamodb",
+        "kind": 5,
+        "importPath": "src.index",
+        "description": "src.index",
+        "peekOfCode": "dynamodb = boto3.resource(\"dynamodb\")\nS3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})",
+        "detail": "src.index",
+        "documentation": {}
+    },
+    {
+        "label": "S3_BUCKET",
+        "kind": 5,
+        "importPath": "src.index",
+        "description": "src.index",
+        "peekOfCode": "S3_BUCKET = os.environ.get(\"S3_BUCKET\", \"default-bucket\")\nDYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})\n        # Generate a unique request ID",
+        "detail": "src.index",
+        "documentation": {}
+    },
+    {
+        "label": "DYNAMODB_TABLE",
+        "kind": 5,
+        "importPath": "src.index",
+        "description": "src.index",
+        "peekOfCode": "DYNAMODB_TABLE = os.environ.get(\"DYNAMODB_TABLE\", \"default-table\")\ndef handler(event, context):\n    try:\n        # Parse the incoming HTTP request body\n        if isinstance(event.get(\"body\"), str):\n            body = json.loads(event[\"body\"])\n        else:\n            body = event.get(\"body\", {})\n        # Generate a unique request ID\n        request_id = str(uuid.uuid4())",
+        "detail": "src.index",
+        "documentation": {}
+    },
+    {
+        "label": "CLOUDFRONT_URL",
+        "kind": 5,
+        "importPath": "test_client",
+        "description": "test_client",
+        "peekOfCode": "CLOUDFRONT_URL = \"https://dimjaatmzzr2n.cloudfront.net\"\nAPI_URL = \"https://d1ngb7eee3.execute-api.eu-west-3.amazonaws.com\"\n# Valid payload with 4+ structured measurements\nvalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},",
+        "detail": "test_client",
+        "documentation": {}
+    },
+    {
+        "label": "API_URL",
+        "kind": 5,
+        "importPath": "test_client",
+        "description": "test_client",
+        "peekOfCode": "API_URL = \"https://d1ngb7eee3.execute-api.eu-west-3.amazonaws.com\"\n# Valid payload with 4+ structured measurements\nvalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},\n    ]",
+        "detail": "test_client",
+        "documentation": {}
+    },
+    {
+        "label": "valid_payload",
+        "kind": 5,
+        "importPath": "test_client",
+        "description": "test_client",
+        "peekOfCode": "valid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"temperature\": 22.5, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-002\", \"temperature\": 25.1, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-003\", \"temperature\": 18.3, \"status\": \"ERROR\"},\n        {\"sensor_id\": \"sensor-004\", \"temperature\": 30.7, \"status\": \"OK\"},\n        {\"sensor_id\": \"sensor-005\", \"temperature\": 19.8, \"status\": \"ERROR\"},\n    ]\n}\nprint(\"=== Test 1: Valid payload via CloudFront ===\")",
+        "detail": "test_client",
+        "documentation": {}
+    },
+    {
+        "label": "invalid_payload",
+        "kind": 5,
+        "importPath": "test_client",
+        "description": "test_client",
+        "peekOfCode": "invalid_payload = {\n    \"measurements\": [\n        {\"sensor_id\": \"sensor-001\", \"status\": \"OK\"},  # Missing temperature\n    ]\n}\ntry:\n    response = requests.post(\n        f\"{CLOUDFRONT_URL}/ingest\",\n        json=invalid_payload,\n        timeout=30",
+        "detail": "test_client",
         "documentation": {}
     }
 ]

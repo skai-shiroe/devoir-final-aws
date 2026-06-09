@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Technique - IoT Data Ingestion Pipeline</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #1a73e8;
+            border-bottom: 3px solid #1a73e8;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #444;
+            margin-top: 30px;
+        }
+        .architecture {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .component {
+            background: #e8f0fe;
+            border-left: 4px solid #1a73e8;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .tag {
+            display: inline-block;
+            background: #1a73e8;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin: 5px 5px 5px 0;
+        }
+        .tag.orange { background: #e8711a; }
+        .tag.green { background: #34a853; }
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 IoT Data Ingestion Pipeline</h1>
+    <p><strong>Cours :</strong> Ingénierie Big Data & IA — Architecture Cloud AWS</p>
+    <p><strong>Date :</strong> Juin 2026</p>
+
+    <h2>📋 Description de l'Architecture</h2>
+    <div class="architecture">
+        <p>
+            Cette infrastructure déploie un pipeline d'ingestion de données IoT en temps réel,
+            entièrement automatisé via AWS CloudFormation (SAM). L'architecture suit les principes
+            <strong>Serverless</strong> et <strong>Big Data</strong> pour assurer scalabilité,
+            haute disponibilité et faible latence.
+        </p>
+
+        <h3>Composants déployés :</h3>
+
+        <div class="component">
+            <span class="tag">Amazon CloudFront</span>
+            <strong>CDN d'ingestion</strong> — Distribution CloudFront placée devant l'API Gateway
+            pour accélérer la collecte mondiale des données IoT (réduction latence, terminaison TLS,
+            cache des réponses).
+        </div>
+
+        <div class="component">
+            <span class="tag tag-orange">Amazon API Gateway</span>
+            <strong>Point d'entrée HTTP</strong> — Endpoint REST <code>POST /ingest</code> qui
+            reçoit les payloads JSON des capteurs IoT et les transmet à la fonction Lambda.
+        </div>
+
+        <div class="component">
+            <span class="tag">AWS Lambda</span>
+            <strong>Moteur de traitement</strong> — Fonction Python 3.11 qui parse le JSON,
+            calcule les métriques (température moyenne, count d'erreurs), stocke le payload
+            brut dans S3 et enregistre le rapport dans DynamoDB.
+        </div>
+
+        <div class="component">
+            <span class="tag tag-green">Amazon S3</span>
+            <strong>Data Lake brut</strong> — Bucket <code>raw-data</code> avec partitionnement
+            temporel <code>raw-zone/year=YYYY/month=MM/</code> pour le stockage des données IoT brutes.
+        </div>
+
+        <div class="component">
+            <span class="tag">Amazon DynamoDB</span>
+            <strong>Feature Store</strong> — Table <code>metrics</code> (PAY_PER_REQUEST) stockant
+            les rapports d'exécution : ID requête, timestamp, chemin S3, température moyenne,
+            nombre d'anomalies.
+        </div>
+
+        <div class="component">
+            <span class="tag">Amazon CloudFront + OAC</span>
+            <strong>CDN documentation sécurisé</strong> — Seconde distribution CloudFront avec
+            Origin Access Control (OAC) pour servir le site de documentation technique depuis
+            S3 de manière sécurisée (accès direct S3 bloqué).
+        </div>
+    </div>
+
+    <h2>🔁 Flux de données</h2>
+    <ol>
+        <li><strong>Capteurs IoT</strong> envoient requête HTTP POST vers <code>/ingest</code></li>
+        <li><strong>CloudFront</strong> achemine via le CDN vers <strong>API Gateway</strong></li>
+        <li><strong>Lambda</strong> déclenchée : parse, calcule, stocke</li>
+        <li>Payload brut → <strong>S3</strong> (Data Lake) avec partitionnement temporel</li>
+        <li>Métriques agrégées → <strong>DynamoDB</strong> (Serving Layer / Feature Store)</li>
+        <li>Réponse HTTP 201 renvoyée au capteur</li>
+    </ol>
+
+    <h2>🛡️ Sécurité</h2>
+    <ul>
+        <li><strong>OAC (Origin Access Control)</strong> : le bucket S3 de documentation est
+            inaccessible directement ; seul CloudFront peut y accéder</li>
+        <li><strong>IAM Policies</strong> : chaque service a le minimum de privilèges nécessaire</li>
+        <li><strong>HTTPS</strong> : toutes les communications sont chiffrées</li>
+        <li><strong>Logs CloudWatch</strong> : toutes les exécutions Lambda sont tracées</li>
+    </ul>
+
+    <footer>
+        <p>Devoir — Architecture Big Data & IA | Pipeline IoT Serverless sur AWS</p>
+    </footer>
+</body>
+</html>
