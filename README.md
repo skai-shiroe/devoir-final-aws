@@ -1,4 +1,4 @@
-# 🚀 IoT Data Ingestion Pipeline — Projet AWS
+#  IoT Data Ingestion Pipeline — Projet AWS
 
 **Cours :** Ingénierie Big Data & IA  
 **Date :** Juin 2026  
